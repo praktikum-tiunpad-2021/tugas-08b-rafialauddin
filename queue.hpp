@@ -9,7 +9,10 @@ namespace priority_queue {
  */
 template <typename T>
 struct Element {
-  // Implementasikan di sini.
+  T data;
+  int priority;
+
+  Element *next;
 };
 
 template <typename T>
@@ -20,7 +23,8 @@ using ElementPtr = Element<T> *;
  */
 template <typename T>
 struct Queue {
-  // Implementasikan di sini.
+  ElementPtr<T> head;
+  ElementPtr<T> tail;
 };
 
 /**
@@ -30,7 +34,12 @@ struct Queue {
  */
 template <typename T>
 Queue<T> new_queue() {
-  // Implementasikan di sini.
+  Queue<T> q;
+
+  q.head = nullptr;
+  q.tail = nullptr;
+
+  return q;
 }
 
 /**
@@ -42,7 +51,35 @@ Queue<T> new_queue() {
  */
 template <typename T>
 void enqueue(Queue<T> &q, const T &value, int priority) {
-  // Implementasikan di sini.
+  ElementPtr<T> newElement = new Element<T>;
+  newElement->data = value;
+  newElement->priority = priority;
+  newElement->next = nullptr;
+
+  ElementPtr<T> pRev = nullptr;
+  if (q.head == nullptr && q.tail == nullptr) {
+    q.head = newElement;
+    q.tail = newElement;
+  } else {
+    ElementPtr<T> temp = q.head;
+    while (newElement->priority <= temp->priority) {
+      if (temp->next == nullptr)
+        break;
+      pRev = temp;
+      temp = temp->next;
+    }
+
+    if (temp == q.head && newElement->priority > temp->priority) {
+      newElement->next = temp;
+      q.head = newElement;
+    } else if (temp == q.tail && newElement->priority < temp->priority) {
+      temp->next = newElement;
+      q.tail = newElement;
+    } else {
+      pRev->next = newElement;
+      newElement->next = temp;
+    }
+  }
 }
 
 /**
@@ -53,7 +90,7 @@ void enqueue(Queue<T> &q, const T &value, int priority) {
  */
 template <typename T>
 T top(const Queue<T> &q) {
-  // Implementasikan di sini.
+  return q.head->data;
 }
 
 /**
@@ -63,7 +100,19 @@ T top(const Queue<T> &q) {
  */
 template <typename T>
 void dequeue(Queue<T> &q) {
-  // Implementasikan di sini.
+  ElementPtr<T> delElement;
+  if (q.head == nullptr && q.tail == nullptr) {
+    delElement = nullptr;
+  } else if (q.head->next == nullptr) {
+    delElement = q.head;
+    q.head = nullptr;
+    q.tail = nullptr;
+  } else {
+    delElement = q.head;
+    q.head = q.head->next;
+    delElement->next = nullptr;
+  }
+  delete delElement;
 }
 
 }  // namespace priority_queue
